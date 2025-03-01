@@ -5,6 +5,8 @@ const AuthContext = createContext({
   signOut: () => null,
   session: null,
   isLoading: false,
+  error: null,
+  successMessage: null,
 });
 
 export function useSession() {
@@ -22,16 +24,18 @@ export function SessionProvider({ children }) {
   const [isLoading, setIsLoading] = useState(false);
   const [session, setSession] = useState(null);
   const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
 
   const signIn = (username, password) => {
     setIsLoading(true);
-    // Lógica de autenticación estática
     const response = fakeAuthService(username, password);
     if (response.success) {
       setSession(response.session);
+      setSuccessMessage('Login successful!');
       setError(null);
     } else {
-      setError('Invalid credentials');
+      setError(response.error);
+      setSuccessMessage(null);
       setSession(null);
     }
     setIsLoading(false);
@@ -39,6 +43,7 @@ export function SessionProvider({ children }) {
 
   const signOut = () => {
     setSession(null);
+    setSuccessMessage(null);
   };
 
   return (
@@ -49,6 +54,7 @@ export function SessionProvider({ children }) {
         session,
         isLoading,
         error,
+        successMessage,
       }}
     >
       {children}
@@ -58,10 +64,9 @@ export function SessionProvider({ children }) {
 
 // Servicio de autenticación ficticio para este ejemplo
 const fakeAuthService = (username, password) => {
-  // Simular una llamada a una API de autenticación
   if (username === 'user' && password === 'pass') {
     return { success: true, session: { user: 'user', token: 'abc123' } };
   } else {
-    return { success: false };
+    return { success: false, error: 'Invalid credentials' };
   }
 };

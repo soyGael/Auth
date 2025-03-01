@@ -1,25 +1,33 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { useSession } from './ctx';
+import { Redirect } from 'expo-router';
 
 export default function SignInForm() {
-  const { signIn, error } = useSession();
+  const { signIn, error, successMessage, session } = useSession();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSignIn = () => {
-    signIn(username, password);
+  
+    const formattedUsername = username.trim().toLowerCase();
+    const formattedPassword = password.trim().toLowerCase();
+    signIn(formattedUsername, formattedPassword);
   };
+
+  if (session) {
+    return <Redirect href="/(tabs)/_layout" />;
+  }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Username</Text>
+      <Text style={styles.label}>Username: user</Text>
       <TextInput
         style={styles.input}
         value={username}
         onChangeText={setUsername}
       />
-      <Text style={styles.label}>Password</Text>
+      <Text style={styles.label}>Password: pass</Text>
       <TextInput
         style={styles.input}
         value={password}
@@ -27,6 +35,7 @@ export default function SignInForm() {
         secureTextEntry
       />
       {error && <Text style={styles.error}>{error}</Text>}
+      {successMessage && <Text style={styles.success}>{successMessage}</Text>}
       <Button title="Sign In" onPress={handleSignIn} />
     </View>
   );
@@ -52,6 +61,10 @@ const styles = StyleSheet.create({
   },
   error: {
     color: 'red',
+    marginBottom: 16,
+  },
+  success: {
+    color: 'green',
     marginBottom: 16,
   },
 });

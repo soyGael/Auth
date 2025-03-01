@@ -1,3 +1,4 @@
+import React from 'react';
 import { Text } from 'react-native';
 import { Redirect, Tabs } from 'expo-router';
 import FontAwesome from "@expo/vector-icons/FontAwesome";
@@ -12,7 +13,6 @@ export default function TabLayout() {
   if (!session) {
     return <Redirect href="/home" />;
   }
-
 
   return (
     <Tabs screenOptions={{ tabBarActiveTintColor: "blue" }}>
